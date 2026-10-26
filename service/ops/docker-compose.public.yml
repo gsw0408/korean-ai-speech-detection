@@ -1,0 +1,23 @@
+# Host overlay for public releases. The proxy reads the shared /opt/nii/proxy directory,
+# so switching releases does not recreate the proxy or reset its rate-limit counters.
+services:
+  proxy:
+    image: ${PROXY_IMAGE:?Set PROXY_IMAGE}
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Set SITE_ADDRESS}
+    volumes:
+      - /opt/nii/proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/nii/proxy:/etc/nii-proxy:ro
+  service:
+    environment:
+      DONATIONS_ENABLED: ${DONATIONS_ENABLED:-false}
+      DONATION_STORE_AUDIO: ${DONATION_STORE_AUDIO:-false}
+      DONATION_MAX_BYTES: ${DONATION_MAX_BYTES:-4294967296}
+      DONATION_MAX_FILES: ${DONATION_MAX_FILES:-1000}
+      DONATION_DAILY_MAX: ${DONATION_DAILY_MAX:-200}
+      DONATION_HOURLY_MAX: ${DONATION_HOURLY_MAX:-40}
+      DONATION_MIN_FREE_BYTES: ${DONATION_MIN_FREE_BYTES:-536870912}
+      DONATION_RETENTION_DAYS: ${DONATION_RETENTION_DAYS:-30}
+      FEEDBACK_URL: ${FEEDBACK_URL:-}
+    volumes:
+      - /srv/nii-donations:/data/donations

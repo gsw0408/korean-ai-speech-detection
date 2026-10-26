@@ -1,0 +1,16 @@
+{
+    log default {
+        output discard
+    }
+}
+
+{$SITE_ADDRESS:http://localhost} {
+    request_body {
+        max_size 26MiB
+    }
+    reverse_proxy service:8000
+    header {
+        Referrer-Policy no-referrer
+        X-Content-Type-Options nosniff
+    }
+}

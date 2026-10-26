@@ -1,0 +1,14 @@
+{
+  "schema": "runtime_public_hashes_v1",
+  "inputs": {
+    "frontend": {
+      "sha256": "3e764a147d689ec06af9ad3c469a8e1025c605084ee62e7bb7a9d41105da74e9"
+    },
+    "audio_windows": {
+      "sha256": "89057ebcc35ede012d923145caf4211f8f0b5ae8bc57769f47c9066077d48f73"
+    },
+    "model": {
+      "sha256": "36ecc56f1f4b1a230e657b14c2d67702b7b01a0d6cb66ac4601497f12c3803d3"
+    }
+  }
+}

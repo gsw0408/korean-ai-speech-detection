@@ -1,0 +1,43 @@
+{
+  "schema": "partial_peak_v1",
+  "statistic": "max_window_score",
+  "bins": [
+    {
+      "min_windows": 4,
+      "max_windows": 15,
+      "threshold": 1.2876627445220947,
+      "n_train_real": 96,
+      "observed_train_real_file_fpr": 0.052083333333333336
+    },
+    {
+      "min_windows": 16,
+      "max_windows": 30,
+      "threshold": 2.7844014167785645,
+      "n_train_real": 211,
+      "observed_train_real_file_fpr": 0.052132701421800945
+    },
+    {
+      "min_windows": 31,
+      "max_windows": 60,
+      "threshold": 2.4466335773468018,
+      "n_train_real": 283,
+      "observed_train_real_file_fpr": 0.053003533568904596
+    }
+  ],
+  "target_real_file_fpr": 0.05,
+  "fit": "TRAIN-recording REAL-only composites (clean), recording-disjoint from DEV; NII weights unchanged",
+  "detector_sha256": "36ecc56f1f4b1a230e657b14c2d67702b7b01a0d6cb66ac4601497f12c3803d3",
+  "preprocessing_sha256s": {
+    "frontend": "3e764a147d689ec06af9ad3c469a8e1025c605084ee62e7bb7a9d41105da74e9",
+    "audio_windows": "89057ebcc35ede012d923145caf4211f8f0b5ae8bc57769f47c9066077d48f73"
+  },
+  "scope_ko": "연속 약 4초 이상 AI 발화 삽입을 4초 창 단위로 찾는 실험적 참고 검사입니다. 짧은 삽입, 압축·잡음, 새 생성기에 일반화된 성능은 확인하지 않았습니다.",
+  "evaluation_ko": "DEV synthetic insertion composites, not independent validation. DEV 합성 삽입 평가(독립 검증 아님): 진짜 오경보 10.8%, 같은 화자 발화 삽입 탐지 75.4% (기존 경고 3.4%), 2초 삽입 29.8%; MP3 64k 탐지 73.2%.",
+  "gate": {
+    "real_fpr_le_0_10": false,
+    "gain_ci_lower_gt_0": true,
+    "pass": false
+  },
+  "onnxruntime": "1.21.1",
+  "created_utc": "2026-10-11T19:33:19.206841+00:00"
+}

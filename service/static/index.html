@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>음성 확인 · NII 연구 시연</title><link rel="stylesheet" href="/static/style.css"><script src="/static/view.js" defer></script><script src="/static/app.js" defer></script></head>
+<body>
+<main>
+  <header><span class="eyebrow">NII SMALL · RESEARCH DEMONSTRATION</span><h1>이 목소리,<br>한 번 더 확인하세요.</h1><p class="intro">한국어 음성의 AI 합성 흔적을 살펴봅니다.<br>결과는 추가 확인을 위한 참고 자료입니다.</p></header>
+  <section class="panel" aria-labelledby="upload-title">
+    <div class="section-head"><h2 id="upload-title">음성 분석</h2><span>WAV · MP3 · FLAC</span></div>
+    <form id="upload-form">
+      <label id="drop-zone" class="drop-zone" for="audio-file"><span class="upload-icon" aria-hidden="true">↑</span><strong id="file-label">파일을 끌어 놓거나 선택하세요</strong><span>4–120초 · 최대 25 MiB · 유효 음성 4초 이상</span><input id="audio-file" name="file" type="file" accept=".wav,.mp3,.flac" required></label>
+      <p id="recording-notice" class="small">공개되지 않은 타인 간의 대화를 그 대화에 참여하지 않은 사람이 녹음한 파일은 올리지 마세요(통신비밀보호법). 본인 목소리나 녹음된 사람의 동의를 받은 음성을 사용하세요.</p>
+      <label class="check"><input id="analysis-consent" type="checkbox" required><span>분석을 위해 음성을 일시 처리하는 데 동의합니다. 분석 파일은 처리 후 삭제됩니다.</span></label><p id="analysis-notice" class="small">수집 항목: 업로드한 음성 파일 · 이용 목적: AI 합성 흔적 분석 · 보유 기간: 분석이 끝나면 바로 삭제. 동의하지 않을 수 있으며, 이 경우 분석을 이용할 수 없습니다. 법정대리인 동의 절차가 없으므로 만 14세 미만은 이용할 수 없습니다.</p>
+      <details id="donation-details" hidden><summary>선택 사항: 음성 데이터 제공 (시연)</summary><label class="check"><input id="donation-opt-in" type="checkbox"><span id="consent-text">음성 데이터 제공 및 동의 철회 절차(시연)에 참여합니다.</span></label><p id="demo-notice" class="small">본 프로젝트에서는 음성 데이터 제공 및 동의 철회 절차를 시연하며, 제공된 음성 파일은 연구용으로 별도 보관하지 않습니다.</p><p class="small">제공을 선택하면 분석이 끝난 뒤 별도 사본을 메모리에 최대 15분 둡니다. 결과 화면에서 확정하면 동의 기록만 남고 사본은 바로 삭제되며, 확정하지 않으면 사본은 저장되지 않고 사라집니다. 자세한 내용은 <a href="/privacy" target="_blank" rel="noopener">개인정보 처리방침(초안)</a>을 확인하세요.</p></details>
+      <button id="analyze-button" type="submit">음성 분석하기 <span aria-hidden="true">→</span></button>
+      <div id="progress-area" hidden role="status" aria-live="polite"><progress id="progress" max="100" value="0"></progress><span id="progress-label">업로드 중…</span></div>
+      <p id="form-error" class="error" role="alert"></p>
+    </form>
+  </section>
+  <section id="result" class="panel result" hidden aria-labelledby="result-title" aria-live="polite">
+    <span id="result-title" class="eyebrow">분석 결과</span>
+    <div id="error-view"><h2 id="outcome"></h2><p id="reason"></p></div>
+    <div id="verdicts" class="verdicts">
+      <article id="whole-card" class="card" aria-labelledby="whole-title">
+        <h3 id="whole-title">전체 음성 합성 검사</h3>
+        <p id="whole-outcome" class="headline"></p>
+        <div class="index-row"><span>AI 합성 흔적 지표</span><strong id="file-index">—</strong></div>
+        <svg id="file-meter" class="meter" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="meter-track" x="0" y="0" width="100" height="6" rx="3"></rect><rect id="file-meter-fill" class="meter-fill" x="0" y="0" width="0" height="6" rx="3"></rect></svg>
+        <p class="small">확률이 아닌 상대적 지표입니다. 높을수록 AI 합성 흔적이 강합니다.</p>
+        <p class="small">파일 전체 구간 점수의 평균으로 판단합니다. 일부 구간만 합성된 경우에는 이 결과가 낮게 나올 수 있습니다.</p>
+      </article>
+      <article id="partial-card" class="card" aria-labelledby="partial-title">
+        <h3 id="partial-title">부분 합성 검사 (실험적)</h3>
+        <p id="partial-headline" class="headline"></p>
+        <p id="partial-body"></p>
+        <p id="partial-combined" hidden>전체 음성 검사에서 이미 AI 합성 의심이 나왔습니다. 표시된 구간은 점수가 특히 높은 부분입니다.</p>
+        <p id="partial-bridge" hidden>전체 평균 점수는 낮지만, 일부 구간 점수가 이 파일 길이에 적용된 검사 기준보다 높습니다.</p>
+        <p id="partial-extrapolated" class="small" hidden>이 길이의 파일은 검사 기준을 보정한 범위 밖이어서 오경보 수준을 보장하지 않습니다.</p>
+        <details id="partial-info"><summary>검사 정보</summary><p id="partial-scope" class="small"></p><p id="partial-eval" class="small"></p></details>
+      </article>
+    </div>
+    <details id="help"><summary>어떻게 판단하나요?</summary><p class="small">이 서비스는 두 가지를 따로 확인합니다. ① 전체 음성 합성 검사는 파일 전체의 평균 점수로, 목소리 전체가 AI로 만들어진 경우를 찾습니다. ② 부분 합성 검사는 가장 높은 4초 구간 점수를 파일 길이에 따라 높아지는 기준과 비교해, 일부만 합성된 경우를 찾습니다. 개발 평가(합성 데이터, 독립 검증 아님)에서 부분 합성 검사는 실제 음성 약 10개 중 1개에도 구간을 표시했고, 2초 삽입은 약 4개 중 1개만 찾았습니다. 결과는 참고 자료이며 화자나 진위를 확인하지 않습니다.</p><p id="help-partial-off" class="small" hidden>현재 구성에서는 ② 부분 합성 검사가 꺼져 있어 ① 전체 음성 합성 검사 결과만 표시됩니다.</p></details>
+    <details id="performance"><summary>측정된 성능과 한계</summary><div id="performance-body" class="small"></div></details>
+    <div id="playback">
+      <audio id="player" controls preload="metadata"></audio>
+      <div class="section-head"><h3>구간별 AI 합성 흔적 지표</h3><span id="clock">0:00</span></div>
+      <div id="strip-open"></div>
+      <div id="legend-open" class="legend-row" hidden><span class="legend-item"><svg id="gray-scale-open" class="gray-scale" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg><span class="small">진할수록 지표가 높습니다 (확률 아님)</span></span><span id="legend-region-item" class="legend-item"><svg id="region-swatch" class="swatch" viewBox="0 0 28 16" aria-hidden="true" focusable="false"></svg><span class="small">색이 있는 칸: 검토가 필요한 구간</span></span></div>
+      <details id="strip-details"><summary>구간별 지표 보기</summary><p class="small">실제 음성에서도 일부 구간의 지표가 높게 나오는 경우가 흔합니다. 이 그래프만으로 합성 여부를 판단하지 마세요.</p><div id="strip-closed"><svg id="timeline" viewBox="0 0 800 44" preserveAspectRatio="none" role="img" aria-label="구간별 AI 합성 흔적 지표 (참고용)" aria-describedby="slot-info" tabindex="0"></svg></div><div id="legend-closed" class="legend-row"><span class="legend-item"><svg id="gray-scale-closed" class="gray-scale" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg><span class="small">진할수록 지표가 높습니다 (확률 아님)</span></span></div></details>
+      <p id="slot-info" class="small" aria-live="polite"></p>
+      <div id="scale" class="scale" hidden><svg id="index-scale" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg><p id="scale-note" class="small"></p></div>
+      <div id="regions" hidden><h3 id="regions-title">검토가 필요한 구간</h3><ul id="region-list" aria-labelledby="regions-title"></ul><button id="regions-more" type="button" class="text-button" hidden aria-expanded="false">더 보기</button></div>
+      <p id="region-status" class="visually-hidden" aria-live="polite"></p>
+      <p class="small">참고용입니다. 각 2초 구간의 지표는 그 구간과 겹치는 4초 분석 창 점수 중 가장 높은 값입니다. 합성 경계나 화자 신원을 확인하는 결과가 아닙니다.</p>
+    </div>
+    <aside id="notice" class="notice"></aside>
+    <div id="donation-action" hidden><p>분석이 끝났습니다. 음성 데이터 제공(시연)을 확정할 수 있습니다. 확정하면 동의 기록이 남고 음성 사본은 바로 삭제되며, 철회 코드로 언제든 동의 기록을 삭제할 수 있습니다. <a href="/privacy" target="_blank" rel="noopener">개인정보 처리방침(초안)</a></p><label class="check"><input id="donation-eligibility" type="checkbox"><span>만 14세 이상이며, 이 녹음에 목소리가 담긴 모든 사람에게서 음성 제공에 대한 동의를 받았습니다.</span></label><button id="donate-button" type="button" class="secondary">제공 확정</button><button id="discard-button" type="button" class="text-button">제공 취소(사본 삭제)</button></div>
+    <div id="withdrawal-result" hidden><h3 id="withdrawal-title">기부 동의가 기록되었습니다 (음성 파일은 보관하지 않음)</h3><p class="small">아래 코드는 다시 표시할 수 없습니다. 코드를 보관하면 언제든 철회할 수 있습니다. 동의 기록은 30일이 지나면 자동 삭제됩니다.</p><label>철회 코드<input id="withdrawal-code" readonly></label><button id="copy-code" type="button" class="secondary">코드 복사</button></div>
+    <details id="repro-details"><summary>재현 정보</summary><pre id="repro"></pre></details>
+  </section>
+  <section class="panel withdrawal"><h2>제공 동의 철회</h2><p class="small">철회하면 동의 기록이 즉시 삭제됩니다. 동의 기록은 철회하지 않아도 30일이 지나면 자동 삭제되며, 프로젝트 종료 시 모두 삭제됩니다. 이름이나 연락처를 받지 않으므로 코드를 잃어버리면 개별 철회가 어렵고, 이 경우 보관 기간이 지나면 자동 삭제됩니다.</p><form id="withdraw-form"><label for="withdraw-code">철회 코드</label><div class="withdraw-row"><input id="withdraw-code" autocomplete="off" required maxlength="64"><button type="submit" class="secondary">삭제 요청</button></div><p id="withdraw-status" role="status"></p></form></section>
+  <footer>연구 시연 · NII-Small · CC BY-NC-SA 4.0 · 비상업적 이용 · <a href="/privacy">개인정보 처리방침(초안)</a><span id="feedback-item" hidden> · <a id="feedback-link" target="_blank" rel="noopener noreferrer">베타 의견 보내기</a></span><br>서비스 성능은 검증되지 않았습니다. 중요한 판단에는 독립적인 추가 확인이 필요합니다.</footer>
+</main>
+</body></html>

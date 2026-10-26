@@ -1,0 +1,16 @@
+{
+ "scope": "TRAIN composites only (held-out eval not used)",
+ "t_seg": 0.5111800432205178,
+ "t_file": 0.7338298797607422,
+ "note": "Rebuilt from the values used on the demo server (calib_thr.py, calib_prob.py). Running those scripts on the TRAIN composites regenerates the full file with per-fold metrics.",
+ "prob": {
+  "method": "Platt scaling (class-balanced logistic regression) on segment NII score",
+  "features": ["score"],
+  "prior": "equal AI/human segment prior (class-balanced)",
+  "coef": 1.0139285366782387,
+  "intercept": 0.8444056642910913,
+  "cv_grouping": "component",
+  "cv": {"folds": 5, "ece": 0.0175, "segments": 7742},
+  "scope": "TRAIN composites only (held-out eval not used)"
+ }
+}

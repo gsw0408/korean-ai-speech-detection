@@ -1,0 +1,283 @@
+{
+  "schema": "webservice_reuse_audit_v1",
+  "created_utc": "2026-10-09T16:31:58.871812+00:00",
+  "milestone": "M0",
+  "status": "pass",
+  "inputs": {
+    "implementation_binding": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트2\\claude\\artifacts\\v2_training_cycle_20261005\\protocol\\IMPLEMENTATION_BINDING_v0.json",
+      "sha256": "e1ff67441de0184f0cd5710aefdf15bf1678604a47c45d77dc283b4bce5b2b90",
+      "expected_sha256": null,
+      "status": "recorded"
+    },
+    "frontend": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트2\\claude\\artifacts\\v2_training_cycle_20261005\\bundles\\session_a_handoff_bound_ledger\\verified_members\\code\\detector_project\\service\\frontend.py",
+      "sha256": "3e764a147d689ec06af9ad3c469a8e1025c605084ee62e7bb7a9d41105da74e9",
+      "expected_sha256": "3e764a147d689ec06af9ad3c469a8e1025c605084ee62e7bb7a9d41105da74e9",
+      "status": "match"
+    },
+    "audio_windows": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트2\\claude\\artifacts\\v2_training_cycle_20261005\\bundles\\session_a_handoff_bound_ledger\\verified_members\\code\\detector_project\\service\\audio_windows.py",
+      "sha256": "89057ebcc35ede012d923145caf4211f8f0b5ae8bc57769f47c9066077d48f73",
+      "expected_sha256": "89057ebcc35ede012d923145caf4211f8f0b5ae8bc57769f47c9066077d48f73",
+      "status": "match"
+    },
+    "scoring_reference": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트2\\claude\\artifacts\\v2_training_cycle_20261005\\code\\evaluator.py",
+      "sha256": "eebe84235908918ded2330d6de53162bb91a9c66c36b4d726ad0201ec6d2acb3",
+      "expected_sha256": null,
+      "status": "recorded"
+    },
+    "model": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트\\models\\nii-wav2vec2-small-onnx\\wav2vec2-small-antideepfake.onnx",
+      "sha256": "36ecc56f1f4b1a230e657b14c2d67702b7b01a0d6cb66ac4601497f12c3803d3",
+      "expected_sha256": "36ecc56f1f4b1a230e657b14c2d67702b7b01a0d6cb66ac4601497f12c3803d3",
+      "status": "match",
+      "license": "CC BY-NC-SA 4.0 (owner supplied; non-commercial)"
+    },
+    "frozen_requirements": {
+      "path": "C:/Users/owner/.codex/tmp/p5r/completed_work/runtime/detector_requirements_frozen.txt",
+      "sha256": "4d48286fa8539aea4b0b614d13390fc198b55e2937092c6ead8650a02f7754db",
+      "expected_sha256": null,
+      "status": "recorded"
+    },
+    "roadmap": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트\\PROJECT_ROADMAP.md",
+      "sha256": "9ff1cf26e4d94323a682876185fc6f148324954141391553490b4b73eccd934c",
+      "expected_sha256": null,
+      "status": "recorded"
+    },
+    "service_protocol": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트\\research\\service_evaluation_protocol_2026-09-16.md",
+      "sha256": "c445a6b16560c07100a5f2b4d2d8bac4d757ff54e205f97e1bd58f63ed77b0a3",
+      "expected_sha256": null,
+      "status": "recorded"
+    },
+    "nii_dev_baseline": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트2\\claude\\artifacts\\v2_training_cycle_20261005\\evidence\\COLAB_NII_BASELINE_20261008.json",
+      "sha256": "b7209a97d158cd9d192c6fae0812754389151b29cd9173343e8a4cc412ceee89",
+      "expected_sha256": null,
+      "status": "recorded"
+    },
+    "train_dev_archive": {
+      "path": "C:/Users/owner/.codex/tmp/dataset-v2-pre-final/transfer/FAKEGEN_v2_TRAIN_DEV_20261005.zip.bin",
+      "sha256": "284838ac00f44bf42b60c3fb7087b52975d433cc478e9a1e97b6c53d87c80506",
+      "expected_sha256": "284838ac00f44bf42b60c3fb7087b52975d433cc478e9a1e97b6c53d87c80506",
+      "status": "match"
+    },
+    "nii_evidence_archive": {
+      "path": "D:/AI/학교자료/26년_2학기/오픈소스SW_프로젝트2/claude/artifacts/kaggle_execution_p5_final_20261008/input_uploads/evidence/POST_FREEZE_TRAINING_EVIDENCE.zip.bin",
+      "sha256": "572b047f0eee6ec77f8599e93e1356c2a41c61ba49471f0d410640382764256c",
+      "expected_sha256": null,
+      "status": "recorded"
+    },
+    "dev_manifest": {
+      "member": "dataset_v2/manifests/dev_required.jsonl",
+      "sha256": "536e03604352881c924d838a5e82c9c90412eb085dd785e5cfac77252cfaa674",
+      "rows": 1998
+    },
+    "nii_dev_scores": {
+      "member": "continuation/nii.json",
+      "sha256": "b7209a97d158cd9d192c6fae0812754389151b29cd9173343e8a4cc412ceee89"
+    }
+  },
+  "blockers": [],
+  "source_container_exception": "Owner explicitly approved only listed containers and requested outputs on 2026-10-10; protected members remain blocked.",
+  "protected_data_accessed": false,
+  "dev_row_keys": [
+    "allocation_role",
+    "audio_path",
+    "bytes",
+    "clean_admission_sha",
+    "component_id",
+    "crosstalk_policy",
+    "derivation",
+    "engine",
+    "family",
+    "internal_label",
+    "label_fake",
+    "labelled_other_speaker_present",
+    "n_trim",
+    "native_sample_rate",
+    "other_speaker_raw_samples",
+    "other_speaker_trimmed_samples",
+    "pair_id",
+    "provenance_group",
+    "realized_pairing",
+    "recording",
+    "reserve_or_backup",
+    "rvc_model",
+    "sample_id",
+    "sample_rate",
+    "selection_status",
+    "sha256",
+    "speaker_id",
+    "split",
+    "transcript",
+    "trim_end",
+    "trim_start",
+    "voice"
+  ],
+  "reference_topology": {
+    "status": {
+      "type": "str",
+      "length": null
+    },
+    "identity": {
+      "type": "dict",
+      "length": 8
+    },
+    "checkpoint_sha256": {
+      "type": "str",
+      "length": null
+    },
+    "provider": {
+      "type": "str",
+      "length": null
+    },
+    "elapsed_s": {
+      "type": "float",
+      "length": null
+    },
+    "records": {
+      "type": "list",
+      "length": 1998
+    },
+    "pooled": {
+      "type": "dict",
+      "length": 3
+    },
+    "per_cell": {
+      "type": "dict",
+      "length": 5
+    },
+    "CALIB_used": {
+      "type": "bool",
+      "length": null
+    },
+    "FINAL_used": {
+      "type": "bool",
+      "length": null
+    },
+    "diagnostic_cells_or_partners_used": {
+      "type": "bool",
+      "length": null
+    }
+  },
+  "reference_crosscheck": {
+    "exact_json_equality": true,
+    "dev_membership_equal": true,
+    "count": 1998,
+    "cells": [
+      "melo",
+      "openvoice",
+      "seedvc",
+      "supertonic",
+      "xtts"
+    ],
+    "CALIB_used": false,
+    "FINAL_used": false
+  },
+  "runtime": {
+    "python": "3.10.0",
+    "docker": null,
+    "ffmpeg": null,
+    "packages": {
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "onnxruntime": null,
+      "soundfile": "0.12.1"
+    }
+  },
+  "local_environment": {
+    "python": "3.10.0",
+    "packages": {
+      "numpy": "1.21.6",
+      "scipy": "1.7.3",
+      "onnxruntime": "1.16.3",
+      "soundfile": "0.12.1"
+    },
+    "ffmpeg_version": "ffmpeg version 7.1-essentials_build-www.gyan.dev Copyright (c) 2000-2024 the FFmpeg developers",
+    "container_verification_available": false
+  },
+  "copied_artifacts": {
+    "frontend.py": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트\\webservice\\pipeline\\frozen\\frontend.py",
+      "sha256": "3e764a147d689ec06af9ad3c469a8e1025c605084ee62e7bb7a9d41105da74e9"
+    },
+    "audio_windows.py": {
+      "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트\\webservice\\pipeline\\frozen\\audio_windows.py",
+      "sha256": "89057ebcc35ede012d923145caf4211f8f0b5ae8bc57769f47c9066077d48f73"
+    }
+  },
+  "source_rehash_after_work": {
+    "frontend": {
+      "sha256": "3e764a147d689ec06af9ad3c469a8e1025c605084ee62e7bb7a9d41105da74e9",
+      "unchanged": true
+    },
+    "audio_windows": {
+      "sha256": "89057ebcc35ede012d923145caf4211f8f0b5ae8bc57769f47c9066077d48f73",
+      "unchanged": true
+    },
+    "model": {
+      "sha256": "36ecc56f1f4b1a230e657b14c2d67702b7b01a0d6cb66ac4601497f12c3803d3",
+      "unchanged": true
+    },
+    "scoring_reference": {
+      "sha256": "eebe84235908918ded2330d6de53162bb91a9c66c36b4d726ad0201ec6d2acb3",
+      "unchanged": true
+    },
+    "implementation_binding": {
+      "sha256": "e1ff67441de0184f0cd5710aefdf15bf1678604a47c45d77dc283b4bce5b2b90",
+      "unchanged": true
+    },
+    "frozen_requirements": {
+      "sha256": "4d48286fa8539aea4b0b614d13390fc198b55e2937092c6ead8650a02f7754db",
+      "unchanged": true
+    },
+    "nii_dev_baseline": {
+      "sha256": "b7209a97d158cd9d192c6fae0812754389151b29cd9173343e8a4cc412ceee89",
+      "unchanged": true
+    }
+  },
+  "dev_extraction": {
+    "files": 1998,
+    "only_manifest_named_dev_members": true,
+    "all_extracted_sha256s_rechecked": true
+  },
+  "unit_test_evidence": {
+    "command": ".venv/Scripts/python.exe -m pytest tests/unit -q --basetemp=work/pytest-tmp --junitxml=work/m1-tests.xml",
+    "counts": {
+      "tests": 89,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "container": false
+  },
+  "model_attribution_source": {
+    "path": "D:\\AI\\학교자료\\26년_2학기\\오픈소스SW_프로젝트\\models\\nii-wav2vec2-small-onnx\\README.md",
+    "sha256": "3abea6b6f60f2fbae915b236640aea540f025fdbf3e5b10f49f17c0cbc30b644"
+  },
+  "milestones": {
+    "M0": "pass",
+    "M1": "pass",
+    "M2": "pass",
+    "M3": "pass",
+    "M4": "pass",
+    "M5": "pass",
+    "M6": "pass",
+    "M7": "pass",
+    "M8": "pass",
+    "M9_assets_only": "pass"
+  },
+  "runtime_image_data_policy": "Only public artifact hashes, model, code, aggregate DEV calibration and test source. No audio, manifests, score-reference files, full source audit or per-file development report is baked into the deployment image.",
+  "final_container_test_count": 128,
+  "final_container_test_evidence": {
+    "tests": 128,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "image_id": "sha256:0efcc0f43a01262ef61d873e25bf33312f200ad54e8b9ab3b1502d67047515d1"
+  }
+}

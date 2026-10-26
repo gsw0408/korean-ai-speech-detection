@@ -1,0 +1,21 @@
+# secrets and local state
+.env
+*.local.txt
+DEMO_ACCESS*
+# model weights (download from the GitHub Release, see README)
+*.onnx
+*.pt
+*.ckpt
+*.zip
+# audio and data
+*.wav
+*.mp3
+*.flac
+*.npy
+data/
+ft_data/
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/

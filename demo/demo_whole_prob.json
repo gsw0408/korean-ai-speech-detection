@@ -1,0 +1,88 @@
+{
+ "method": "Platt scaling (class-balanced logistic regression) on the whole-file v1 score",
+ "features": "v1 mean score",
+ "coef": 1.7167777199524359,
+ "intercept": 0.593824213290631,
+ "prior": "equal AI/real file prior (class-balanced)",
+ "n_files": 4058,
+ "n_ai_files": 2029,
+ "skipped_short": 0,
+ "cv_folds": 5,
+ "cv_grouping": "component",
+ "cv": {
+  "log_loss": 0.0847,
+  "brier": 0.0238,
+  "ece": 0.0041,
+  "bins": [
+   {
+    "bin": "0.0-0.1",
+    "n": 1851,
+    "mean_p": 0.01,
+    "ai_rate": 0.011
+   },
+   {
+    "bin": "0.1-0.2",
+    "n": 94,
+    "mean_p": 0.144,
+    "ai_rate": 0.17
+   },
+   {
+    "bin": "0.2-0.3",
+    "n": 37,
+    "mean_p": 0.24,
+    "ai_rate": 0.216
+   },
+   {
+    "bin": "0.3-0.4",
+    "n": 29,
+    "mean_p": 0.347,
+    "ai_rate": 0.345
+   },
+   {
+    "bin": "0.4-0.5",
+    "n": 29,
+    "mean_p": 0.441,
+    "ai_rate": 0.517
+   },
+   {
+    "bin": "0.5-0.6",
+    "n": 36,
+    "mean_p": 0.557,
+    "ai_rate": 0.583
+   },
+   {
+    "bin": "0.6-0.7",
+    "n": 32,
+    "mean_p": 0.652,
+    "ai_rate": 0.562
+   },
+   {
+    "bin": "0.7-0.8",
+    "n": 45,
+    "mean_p": 0.753,
+    "ai_rate": 0.822
+   },
+   {
+    "bin": "0.8-0.9",
+    "n": 60,
+    "mean_p": 0.855,
+    "ai_rate": 0.833
+   },
+   {
+    "bin": "0.9-1.0",
+    "n": 1845,
+    "mean_p": 0.994,
+    "ai_rate": 0.993
+   }
+  ]
+ },
+ "p_at_t_low": 0.045,
+ "p_at_t_warn": 0.434,
+ "per_engine_ai_mean_p": {
+  "rvc": 0.909,
+  "supertonic": 0.99,
+  "xtts": 0.959
+ },
+ "real_mean_p": 0.045,
+ "scope": "Dataset v2 TRAIN whole files only (DEV/CALIB/FINAL not used)"
+}

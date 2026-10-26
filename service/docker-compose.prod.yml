@@ -1,0 +1,41 @@
+services:
+  service:
+    image: ${IMAGE:?Set IMAGE to an approved immutable ECR tag or digest}
+    environment:
+      ACTIVE_BUNDLE: ${ACTIVE_BUNDLE:-bundles/nii-small-v1}
+      ONNX_THREADS: ${ONNX_THREADS:-4}
+      ANALYSIS_CONCURRENCY: 1
+    tmpfs:
+      - /tmp/uploads:rw,nosuid,noexec,size=512m,uid=10001,gid=10001,mode=0700
+    volumes:
+      - donations:/data/donations
+      - ./bundles:/service/bundles:ro
+      - ./models:/service/models:ro
+    expose:
+      - "8000"
+    mem_limit: ${SERVICE_MEMORY:-2500m}
+    cpus: ${SERVICE_CPUS:-4}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  proxy:
+    image: caddy:2.10.2
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-http://localhost}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:80:80"
+      - "${BIND_ADDRESS:-127.0.0.1}:443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      service:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  donations:
+  caddy_data:
+  caddy_config:

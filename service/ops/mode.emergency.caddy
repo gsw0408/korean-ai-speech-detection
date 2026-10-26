@@ -1,0 +1,9 @@
+# Emergency mode: new analyses and donation confirmations are paused.
+# Withdrawal, token discard, the page, /privacy and /api/config stay available.
+vars nii_proxy_mode emergency
+@paused {
+    method POST
+    path /api/analyze /api/donations
+}
+header @paused Content-Type application/json
+respond @paused `{"reason":"service_paused"}` 503

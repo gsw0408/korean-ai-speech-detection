@@ -1,0 +1,26 @@
+{
+  "schema": "speech_detector_bundle_v1",
+  "bundle_id": "nii-small-v1",
+  "input_length": 64000,
+  "score_direction": "higher_is_ai",
+  "aggregation": "mean_negative_bonafide_logit",
+  "detector": {
+    "file": "models/wav2vec2-small-antideepfake.onnx",
+    "sha256": "36ecc56f1f4b1a230e657b14c2d67702b7b01a0d6cb66ac4601497f12c3803d3",
+    "license": "CC BY-NC-SA 4.0"
+  },
+  "preprocessing": {
+    "frontend": {
+      "file": "pipeline/frozen/frontend.py",
+      "sha256": "3e764a147d689ec06af9ad3c469a8e1025c605084ee62e7bb7a9d41105da74e9"
+    },
+    "audio_windows": {
+      "file": "pipeline/frozen/audio_windows.py",
+      "sha256": "89057ebcc35ede012d923145caf4211f8f0b5ae8bc57769f47c9066077d48f73"
+    }
+  },
+  "calibration": {
+    "file": "bundles/nii-small-v1/calibration.json",
+    "sha256": "933a4369de16b7e77bd3ded2c8fdd732235122d8f811a575117254c4d8827c22"
+  }
+}

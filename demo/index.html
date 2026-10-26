@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부분 합성 구간 탐지</title>
+<style>
+  :root { --bg:#f6f7f5; --card:#fff; --ink:#1f2a28; --muted:#5f6b67; --line:#d9dfdb; --accent:#2f5d50; --warn:#c0522a; --warn-soft:#f6d9cc; --seg:#c9d3cf; --pressed:#a9b2af; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141a19; --card:#1d2523; --ink:#e7ecea; --muted:#9aa7a2; --line:#33403c; --accent:#7fbfa9; --warn:#ef8a62; --warn-soft:#5a3426; --seg:#3a4844; --pressed:#4b5753; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif; }
+  main { max-width:880px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:1.45rem; margin:0 0 6px; }
+  .banner { background:var(--warn-soft); border-radius:8px; padding:10px 12px; font-size:.92rem; margin:12px 0 18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin:12px 0; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 16px; font-size:.95rem; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:default; }
+  .muted { color:var(--muted); font-size:.88rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  .verdict { font-size:1.15rem; font-weight:700; margin:6px 0; }
+  .warn { color:var(--warn); }
+  .ok { color:var(--accent); }
+  #timeline { position:relative; height:46px; background:var(--bg); border:1px solid var(--line); border-radius:6px; overflow:hidden; margin-top:10px; }
+  .seg { position:absolute; top:6px; bottom:6px; background:var(--seg); border-right:2px solid var(--card); cursor:pointer; }
+  .seg.flag { background:var(--warn); }
+  .seg:hover { filter:brightness(1.1); }
+  .axis { display:flex; justify-content:space-between; font-size:.78rem; color:var(--muted); margin-top:4px; }
+  table { width:100%; border-collapse:collapse; font-size:.92rem; margin-top:10px; }
+  th, td { padding:7px 6px; border-bottom:1px solid var(--line); text-align:left; }
+  td button { padding:4px 10px; font-size:.82rem; min-width:76px; transition:background .15s, transform .05s; }
+  td button.playing { background:var(--pressed); color:var(--ink); box-shadow:inset 0 2px 4px rgba(0,0,0,.3); transform:translateY(1px); }
+  audio { width:100%; margin-top:10px; }
+  .meter { height:8px; background:var(--line); border-radius:4px; overflow:hidden; width:120px; display:inline-block; vertical-align:middle; }
+  .meter > span { display:block; height:100%; background:var(--accent); }
+  .flag .meter > span, .meter.flag > span { background:var(--warn); }
+  .how summary { cursor:pointer; }
+  .how h3 { font-size:1rem; margin:18px 0 6px; }
+  .how ul, .how ol { margin:4px 0; padding-left:20px; }
+  .how li, .how p { font-size:.92rem; line-height:1.6; margin:4px 0; }
+  .formula { background:var(--bg); border-radius:6px; padding:8px 12px; text-align:center; }
+  .prob { font-size:.95rem; margin-top:2px; color:var(--ink); font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>부분 합성 구간 탐지</h1>
+  <div class="muted">편집 경계 분할(한국어 데이터로 재학습한 BAM) → 구간별 AI/사람 판정(NII-Small)</div>
+  <div class="banner">
+    한국어 합성 편집 데이터(TRAIN)로만 검증했습니다. 확률은 TRAIN 데이터로 보정한 값이라 실제 환경에서는 달라질 수 있습니다.
+    업로드한 음성은 분석 후 바로 삭제되며 저장하지 않습니다.
+  </div>
+
+  <details class="card how">
+    <summary><b>이 데모는 어떻게 판정하나요?</b> <span class="muted">사용 모델 · 판정 과정 · 기준 · 확률 계산</span></summary>
+
+    <h3>1. 사용한 모델</h3>
+    <ul>
+      <li><b>NII-Small</b> (Wav2Vec2-Small 기반 AI 음성 탐지 모델, NII AntiDeepfake) — 기존 서비스와 같은 모델을 공개 가중치 그대로 사용합니다.
+        음성 조각을 넣으면 <b>점수</b>(클수록 AI 쪽)를 냅니다.</li>
+      <li><b>BAM</b> (WavLM-Large 기반 편집 경계 탐지 모델) — 공개 모델은 영어로 학습돼 한국어 대화의 경계를 잘 못 잡아서,
+        TRAIN 데이터로 만든 <b>한국어 합성 편집 음성 2,930개로 재학습</b>했습니다. 0.16초마다 "여기가 편집 경계일 확률"을 냅니다.
+        AI를 넣었든 사람 음성을 넣었든 <b>편집 위치만</b> 찾습니다.</li>
+    </ul>
+
+    <h3>2. 공통 전처리 (기존 서비스와 동일)</h3>
+    <p>디코딩 → 16 kHz 모노 → 앞뒤 무음 제거 → 음량을 −26 dBFS로 맞춤. 무음을 뺀 길이가 4초 미만이면 분석하지 않습니다.</p>
+
+    <h3>3. ① 전체 음성 합성 검사 (현재 서비스 방식)</h3>
+    <ul>
+      <li><b>과정:</b> 4초 창을 2초씩 옮기며 NII 점수를 구하고 <b>평균</b>을 냅니다.</li>
+      <li><b>기준</b> (기존 서비스가 DEV 데이터로 정한 값): 평균 ≥ −0.501 → "AI 음성 의심", 평균 ≤ −2.132 → "AI 음성 증거가 낮음", 그 사이 → "판단 유보".</li>
+      <li><b>약점:</b> 1~2초짜리 짧은 삽입은 평균에 묻혀 놓치기 쉽습니다. 그래서 ②를 만들었습니다.</li>
+    </ul>
+
+    <h3>4. ② 부분 합성 검사</h3>
+    <ol>
+      <li><b>경계 찾기:</b> BAM을 8초 창·4초 겹침으로 돌려 경계 확률을 구하고, 0.5를 넘는 봉우리를 편집 경계로 봅니다(0.3초 안의 경계는 하나로 합침).</li>
+      <li><b>구간 나누기:</b> 경계 사이를 한 구간으로 보고, 0.5초보다 짧은 조각은 옆 구간에 붙입니다.</li>
+      <li><b>구간 판정:</b> 구간마다 NII 점수를 구해 <b>0.511 이상이면 "AI 합성 의심"</b>(주황)으로 표시합니다.
+        0.511은 TRAIN의 실제 음성 구간 중 상위 5% 지점이라, 실제 음성 구간을 잘못 표시하는 비율이 약 5%입니다.</li>
+      <li><b>파일 판정:</b> 가장 높은 구간 점수가 <b>0.734 이상이면 "AI 합성 의심 구간 있음"</b>입니다(TRAIN 실제 음성 파일의 상위 10% 지점, 오표시 약 10%).
+        주황 구간은 있지만 이 기준에 못 미치면 "약한 의심 구간 있음"으로 표시합니다.</li>
+    </ol>
+    <p><b>결과:</b> 재학습에 쓰지 않은 검증용 합성 편집 780개에서 AI 삽입 구간 찾기 AUC는 1초 삽입 0.728, 2초 삽입 0.887로,
+      4초 고정 창으로 자르는 방식(0.595, 0.736)보다 높았습니다. TRAIN에서는 AI 삽입 파일의 51.8%를 "의심 구간 있음"으로 잡았고,
+      가장 의심한 구간이 실제 AI 구간과 겹친 비율은 90.4%였습니다.</p>
+
+    <h3>5. 확률 계산 (Platt 보정)</h3>
+    <p>점수는 그 자체로 확률이 아니라서, 정답을 아는 TRAIN 데이터로 <b>점수 → 확률</b> 함수를 맞췄습니다.</p>
+    <p class="formula">AI 합성 확률 = 1 ÷ (1 + e<sup>−(a × 점수 + b)</sup>)</p>
+    <ul>
+      <li><b>구간 확률:</b> a = 1.014, b = 0.844. TRAIN 합성 편집 음성의 구간 7,742개(AI 구간 983개)로 맞췄습니다.
+        같은 화자 묶음이 섞이지 않게 5번 나눠 검증한 보정 오차는 1.8%입니다. 구간 의심 기준 0.511은 약 80%에 해당합니다.</li>
+      <li><b>전체 확률:</b> a = 1.717, b = 0.594. TRAIN의 실제 음성 파일과 AI 음성 파일 4,058(각 2,029개)개로 같은 방식으로 맞췄고, 보정 오차는 0.4%입니다.
+        기존 기준으로 보면 "AI 음성 의심" 경계(−0.501)는 약 43%, "증거 낮음" 경계(−2.132)는 약 4.5%입니다.</li>
+      <li><b>뜻:</b> "TRAIN과 비슷한 음성에서 이 점수가 나왔을 때 실제로 AI였던 비율"입니다.
+        AI와 사람이 <b>반반</b>이라고 가정하고 맞췄으므로, 실제로 AI가 드문 상황이면 진짜 확률은 이보다 낮습니다.</li>
+    </ul>
+
+    <h3>6. 한계</h3>
+    <ul>
+      <li>TRAIN 데이터로 만든 합성 편집으로만 검증했고, 학습 때 본 생성기(Supertonic·XTTS·RVC) 외의 성능은 모릅니다.</li>
+      <li>BAM을 TRAIN으로 재학습해서 TRAIN에서는 구간이 깨끗하게 나뉩니다. 실제 음성에서는 구간 확률이 실제보다 높게 나올 수 있습니다.</li>
+      <li>0.5초 안팎의 짧은 조각에서 오표시가 생길 수 있습니다.</li>
+      <li>기준값과 확률은 모두 TRAIN 데이터로만 정했고, 평가 데이터는 쓰지 않았습니다.</li>
+    </ul>
+  </details>
+
+  <div class="card">
+    <div class="row">
+      <input type="file" id="file" accept=".wav,.mp3,.flac,audio/*">
+      <button id="go" disabled>분석하기</button>
+      <span id="status" class="muted">WAV/MP3/FLAC, 4~120초</span>
+    </div>
+    <audio id="player" controls hidden></audio>
+  </div>
+
+  <div id="result" hidden>
+    <div class="grid">
+      <div class="card">
+        <div class="muted">① 전체 음성 합성 검사 (현재 서비스 방식)</div>
+        <div id="whole" class="verdict"></div>
+        <div id="wholeProb" class="prob"></div>
+        <div id="wholeSub" class="muted"></div>
+      </div>
+      <div class="card">
+        <div class="muted">② 부분 합성 검사</div>
+        <div id="partial" class="verdict"></div>
+        <div id="partialSub" class="muted"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <b>구간 타임라인</b><span class="muted">주황 = AI 합성 의심 구간 · 클릭하면 재생</span>
+      </div>
+      <div id="timeline"></div>
+      <div class="axis"><span>0초</span><span id="endLabel"></span></div>
+      <table>
+        <thead><tr><th>#</th><th>구간</th><th>AI 합성 확률</th><th>판정</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div id="timing" class="muted" style="margin-top:8px"></div>
+    </div>
+  </div>
+</main>
+<script>
+const key = new URLSearchParams(location.search).get("k") || "";
+const $ = (id) => document.getElementById(id);
+const player = $("player");
+const MAX_BYTES = 25 * 1024 * 1024;
+let stopAt = null;   // end of the segment being played; cleared when playback stops or the user seeks elsewhere
+let playingBtn = null;   // row button of the segment being played, shown pressed (gray) until playback stops
+player.addEventListener("timeupdate", () => {
+  if (stopAt !== null && player.currentTime >= stopAt) {
+    if (player.currentTime < stopAt + 0.5) player.pause();
+    stopAt = null;
+  }
+});
+function release() {
+  if (playingBtn) { playingBtn.classList.remove("playing"); playingBtn.textContent = "▶ 재생"; playingBtn = null; }
+}
+player.addEventListener("pause", () => { stopAt = null; release(); });
+
+$("file").addEventListener("change", () => {
+  const f = $("file").files[0];
+  $("result").hidden = true;
+  if (player.src) URL.revokeObjectURL(player.src);
+  if (f && f.size > MAX_BYTES) { $("go").disabled = true; player.hidden = true; $("status").textContent = "25MB 이하 파일만 분석합니다."; return; }
+  $("go").disabled = !f;
+  $("status").textContent = "WAV/MP3/FLAC, 4~120초";
+  if (f) { player.src = URL.createObjectURL(f); player.hidden = false; }
+});
+
+function play(a, b, btn) {
+  if (btn === playingBtn && !player.paused) { player.pause(); return; }   // pressing the gray button again stops it
+  release();
+  player.currentTime = a;
+  stopAt = b;
+  playingBtn = btn;
+  btn.classList.add("playing"); btn.textContent = "■ 재생 중";
+  player.play().catch(() => { stopAt = null; release(); $("status").textContent = "이 브라우저에서 재생할 수 없는 형식입니다."; });
+}
+
+$("go").addEventListener("click", async () => {
+  const f = $("file").files[0];
+  if (!f) return;
+  $("go").disabled = true; $("status").textContent = "분석 중…"; $("result").hidden = true;
+  const body = new FormData(); body.append("file", f);
+  try {
+    const r = await fetch("/api/analyze", { method: "POST", body, headers: { "X-Demo-Key": key } });
+    const d = await r.json();
+    if (!r.ok) { $("status").textContent = d.error || d.detail || "분석할 수 없습니다."; return; }
+    render(d); $("status").textContent = "완료";
+  } catch (e) { $("status").textContent = "서버에 연결할 수 없습니다."; }
+  finally { $("go").disabled = false; }
+});
+
+function render(d) {
+  const w = $("whole");
+  w.textContent = d.whole_file.label;
+  w.className = "verdict " + (d.whole_file.code === "warn" ? "warn" : d.whole_file.code === "low" ? "ok" : "");
+  $("wholeProb").textContent = `파일 전체 AI 합성 확률 ${d.whole_file.ai_prob}%`;
+  $("wholeSub").textContent = `4초 창 평균 점수 ${d.whole_file.score} · 기준: 기존 서비스(DEV)`;
+  const p = $("partial");
+  // file verdict uses the stricter file threshold; a flagged segment below it is shown as a weak suspicion, not "none"
+  const weak = !d.partial.suspected && d.partial.flagged_segments > 0;
+  p.textContent = d.partial.suspected ? "AI 합성 의심 구간 있음" : weak ? "약한 의심 구간 있음" : "의심 구간 없음";
+  p.className = "verdict " + (d.partial.suspected ? "warn" : weak ? "" : "ok");
+  $("partialSub").innerHTML = "";
+  const pp = document.createElement("div"); pp.className = "prob";
+  pp.textContent = `가장 의심되는 구간의 AI 합성 확률 ${d.partial.max_ai_prob}%`;
+  const ps = document.createElement("div");
+  ps.textContent = `의심 구간 ${d.partial.flagged_segments}개 · 경계 ${d.boundaries.length}개`;
+  $("partialSub").append(pp, ps);
+  player.pause();
+  const tl = $("timeline"); tl.innerHTML = "";
+  const total = d.duration;
+  $("endLabel").textContent = total.toFixed(1) + "초";
+  const rows = $("rows"); rows.innerHTML = "";
+  d.segments.forEach((s, i) => {
+    const el = document.createElement("div");
+    el.className = "seg" + (s.flagged ? " flag" : "");
+    el.style.left = (100 * s.start / total) + "%";
+    el.style.width = Math.max(0.6, 100 * (s.end - s.start) / total) + "%";
+    el.title = `${s.start.toFixed(2)}–${s.end.toFixed(2)}초 · AI 확률 ${s.ai_prob}%`;
+    tl.appendChild(el);
+    const tr = document.createElement("tr");
+    if (s.flagged) tr.className = "flag";
+    tr.innerHTML = `<td>${i + 1}</td><td>${s.start.toFixed(2)}–${s.end.toFixed(2)}초</td>
+      <td><span class="meter${s.flagged ? " flag" : ""}"><span style="width:${s.ai_prob}%"></span></span> ${s.ai_prob}%</td>
+      <td class="${s.flagged ? "warn" : ""}">${s.flagged ? "AI 합성 의심" : "의심 낮음"}</td>
+      <td><button>▶ 재생</button></td>`;
+    const btn = tr.querySelector("button");
+    btn.onclick = () => play(s.start, s.end, btn);
+    el.onclick = () => play(s.start, s.end, btn);
+    rows.appendChild(tr);
+  });
+  $("timing").textContent = `처리 시간 ${d.timing.total_s}초 (경계 ${d.timing.boundary_s}초 · NII ${d.timing.nii_s}초) · 판정 기준과 확률은 TRAIN 데이터로 산출(위 "어떻게 판정하나요?" 참고)`;
+  $("result").hidden = false;
+}
+</script>
+</body>
+</html>

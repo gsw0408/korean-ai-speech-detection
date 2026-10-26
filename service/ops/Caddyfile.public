@@ -1,0 +1,95 @@
+# Shared public proxy configuration (one copy per host at /opt/nii/proxy, used by every release).
+# Rate-limit numbers can be overridden through environment variables for tests; defaults are production values.
+{
+    order rate_limit before reverse_proxy
+    log default {
+        output discard
+    }
+    servers {
+        timeouts {
+            read_header 10s
+            read_body 120s
+            write 180s
+            idle 60s
+        }
+    }
+}
+
+{$SITE_ADDRESS} {
+    request_body {
+        max_size 26MiB
+    }
+    # Normal or emergency mode; switched with ops/proxy_mode.sh and a config reload.
+    import /etc/nii-proxy/mode.caddy
+    # Per-client zones use the client IP as key (kept only in Caddy memory, never logged).
+    # The *_all zones use one shared key, so spreading requests over many addresses does not help.
+    rate_limit {
+        zone site {
+            key {remote_host}
+            events {$RL_SITE:120}
+            window 1m
+        }
+        zone analyze {
+            match {
+                method POST
+                path /api/analyze
+            }
+            key {remote_host}
+            events {$RL_ANALYZE:6}
+            window 10m
+        }
+        zone analyze_all {
+            match {
+                method POST
+                path /api/analyze
+            }
+            key all
+            events {$RL_ANALYZE_ALL:60}
+            window 10m
+        }
+        zone donate {
+            match {
+                method POST
+                path /api/donations
+            }
+            key {remote_host}
+            events {$RL_DONATE:5}
+            window 1h
+        }
+        zone donate_all {
+            match {
+                method POST
+                path /api/donations
+            }
+            key all
+            events {$RL_DONATE_ALL:40}
+            window 10m
+        }
+        zone withdraw {
+            match {
+                method DELETE
+                path /api/donations/*
+            }
+            key {remote_host}
+            events {$RL_WITHDRAW:30}
+            window 1h
+        }
+        zone discard {
+            match {
+                method DELETE
+                path /api/donation-tokens/*
+            }
+            key {remote_host}
+            events {$RL_DISCARD:30}
+            window 1h
+        }
+    }
+    reverse_proxy service:8000
+    header {
+        Referrer-Policy no-referrer
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Strict-Transport-Security "max-age=31536000"
+        -Server
+    }
+}

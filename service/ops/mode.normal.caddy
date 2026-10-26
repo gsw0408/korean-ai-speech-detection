@@ -1,0 +1,2 @@
+# Normal mode: every route is served.
+vars nii_proxy_mode normal
